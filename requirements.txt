@@ -1,0 +1,2 @@
+Flask==1.0.2
+tinydb==3.9.0.post1
