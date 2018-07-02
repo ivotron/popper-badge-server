@@ -1,1 +1,10 @@
+# Database
 db.json
+
+# Pytest specific
+.pytest_cache/
+__pycache__/
+
+# Coverage specific
+htmlcov/
+.coverage

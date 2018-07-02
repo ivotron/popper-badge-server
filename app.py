@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 
 from flask import Flask, jsonify, request, redirect
 from tinydb import TinyDB, Query
@@ -15,10 +16,9 @@ def index(org, repo):
         GET: Redirects to badge svg image url from https://shields.io
         POST: Records the entry for org/repo in the database
     """
-
     if request.method == 'GET':
 
-        db = TinyDB('db.json')
+        db = TinyDB(app.config.get('DB_NAME', 'db.json'))
         Record = Query()
         records = sorted(
             db.search(Record.name == '{}/{}'.format(org, repo)),
@@ -42,7 +42,7 @@ def index(org, repo):
 
     elif request.method == 'POST':
 
-        commit_id = request.form.get('commit', None)
+        commit_id = request.form.get('commit_id', None)
         timestamp = request.form.get('timestamp', None)
         status = request.form.get('status', None)
 
@@ -51,7 +51,7 @@ def index(org, repo):
                 'message': "Please provide commit id, timestamp and status."
             }), 400
         else:
-            db = TinyDB('db.json')
+            db = TinyDB(app.config.get('DB_NAME', 'db.json'))
             db.insert({
                 'name': '{}/{}'.format(org, repo),
                 'commit_id': commit_id,
@@ -71,7 +71,7 @@ def list_records(org, repo):
     Returns:
         List of records in the form of JSON data
     """
-    db = TinyDB('db.json')
+    db = TinyDB(app.config.get('DB_NAME', 'db.json'))
     Record = Query()
     records = sorted(
         db.search(Record.name == '{}/{}'.format(org, repo)),
