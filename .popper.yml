@@ -1,0 +1,16 @@
+metadata:
+  access_right: open
+  license: CC-BY-4.0
+  publication_type: article
+  upload_type: publication
+pipelines:
+  test-badge-server:
+    envs:
+    - host
+    path: pipelines/test-badge-server
+    stages:
+    - install-server
+    - run-tests
+    - clean-up
+popperized:
+- github/popperized

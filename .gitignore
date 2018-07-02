@@ -8,3 +8,8 @@ __pycache__/
 # Coverage specific
 htmlcov/
 .coverage
+
+# Popper specific
+.cache
+popper_logs
+popper_status
