@@ -1,0 +1,11 @@
+
+---
+language: python
+python:
+  - 2.7
+  - 3.6
+install:
+  - git clone --recursive https://github.com/systemslab/popper.git
+  - export PATH=$PATH:$PWD/popper/cli/bin
+script:
+  - popper run
