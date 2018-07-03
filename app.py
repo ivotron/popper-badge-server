@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 import os
 
-from flask import Flask, jsonify, request, redirect
+from flask import Flask, jsonify, request, render_template, make_response
 from tinydb import TinyDB, Query
 
 
 app = Flask(__name__)
+
+
+BADGE_NAMES = {
+    'OK': 'Popper-OK-green',
+    'GOLD': 'Popper-GOLD-yellow',
+    'FAIL': 'Popper-FAIL-red'
+}
 
 
 @app.route('/<org>/<repo>', methods=['GET', 'POST'])
@@ -13,7 +20,7 @@ def index(org, repo):
     """Handles root url route of the server.
 
     Supported methods:
-        GET: Redirects to badge svg image url from https://shields.io
+        GET: Serve the badge svg image
         POST: Records the entry for org/repo in the database
     """
     if request.method == 'GET':
@@ -24,21 +31,16 @@ def index(org, repo):
             db.search(Record.name == '{}/{}'.format(org, repo)),
             key=lambda x: x['timestamp']
         )
-        color_codes = {
-            'OK': 'green',
-            'GOLD': 'yellow',
-            'FAIL': 'red'
-        }
         if len(records) > 0:
             status = records[-1]['status']
-            return redirect(
-                'https://img.shields.io/badge/Popper-{}-{}.svg'
-                .format(status, color_codes[status])
+            svg = render_template(
+                BADGE_NAMES.get(status, 'Popper-undefined-lightgrey') + '.svg'
             )
         else:
-            return redirect(
-                'https://img.shields.io/badge/Popper-undefined-lightgrey.svg'
-            )
+            svg = render_template('Popper-undefined-lightgrey.svg')
+        response = make_response(svg)
+        response.content_type = 'image/svg+xml'
+        return response
 
     elif request.method == 'POST':
 
