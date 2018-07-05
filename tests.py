@@ -34,11 +34,13 @@ class TestPopperBadgeServer(TestCase):
         """When no data is present, test whether the app is properly redirected
         with proper status code and proper redirect url."""
         response = self.app.get('/systemslab/popper')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            'https://img.shields.io/badge/Popper-undefined-lightgrey.svg'
-        )
+        try:
+            data = response.data.decode()
+        except AttributeError:
+            data = response.data
+        self.assertIn('undefined', data)
+        self.assertEqual(response.content_type, 'image/svg+xml')
+        self.assertEqual(response.status_code, 200)
 
     def test_post_correct_data(self):
         response = self.app.post('/systemslab/popper', data={
@@ -76,11 +78,13 @@ class TestPopperBadgeServer(TestCase):
             'timestamp': '1530440638'
         })
         response = self.app.get('/systemslab/popper')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            'https://img.shields.io/badge/Popper-OK-green.svg'
-        )
+        try:
+            data = response.data.decode()
+        except AttributeError:
+            data = response.data
+        self.assertIn('OK', data)
+        self.assertEqual(response.content_type, 'image/svg+xml')
+        self.assertEqual(response.status_code, 200)
 
     def test_get_status_gold_badge(self):
         """When no data is present, test whether the app is properly redirected
@@ -91,11 +95,13 @@ class TestPopperBadgeServer(TestCase):
             'timestamp': '1530440638'
         })
         response = self.app.get('/systemslab/popper')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            'https://img.shields.io/badge/Popper-GOLD-yellow.svg'
-        )
+        try:
+            data = response.data.decode()
+        except AttributeError:
+            data = response.data
+        self.assertIn('GOLD', data)
+        self.assertEqual(response.content_type, 'image/svg+xml')
+        self.assertEqual(response.status_code, 200)
 
     def test_get_status_fail_badge(self):
         """When no data is present, test whether the app is properly redirected
@@ -106,11 +112,30 @@ class TestPopperBadgeServer(TestCase):
             'timestamp': '1530440638'
         })
         response = self.app.get('/systemslab/popper')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response.location,
-            'https://img.shields.io/badge/Popper-FAIL-red.svg'
-        )
+        try:
+            data = response.data.decode()
+        except AttributeError:
+            data = response.data
+        self.assertIn('FAIL', data)
+        self.assertEqual(response.content_type, 'image/svg+xml')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_incorrect_status_badge(self):
+        """When no data is present, test whether the app is properly redirected
+        with proper status code and proper redirect url."""
+        self.app.post('/systemslab/popper', data={
+            'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
+            'status': 'blahblah',
+            'timestamp': '1530440638'
+        })
+        response = self.app.get('/systemslab/popper')
+        try:
+            data = response.data.decode()
+        except AttributeError:
+            data = response.data
+        self.assertIn('undefined', data)
+        self.assertEqual(response.content_type, 'image/svg+xml')
+        self.assertEqual(response.status_code, 200)
 
     def test_get_list_without_data(self):
         """When no data is present, test whether empty data is returned fro the
