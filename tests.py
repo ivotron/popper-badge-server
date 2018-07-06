@@ -69,12 +69,12 @@ class TestPopperBadgeServer(TestCase):
         })
         self.assertEqual(response.status_code, 400)
 
-    def test_get_status_ok_badge(self):
+    def test_get_status_success_badge(self):
         """When no data is present, test whether the app is properly redirected
         with proper status code and proper redirect url."""
         self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
-            'status': 'OK',
+            'status': 'SUCCESS',
             'timestamp': '1530440638'
         })
         response = self.app.get('/systemslab/popper')
@@ -82,7 +82,7 @@ class TestPopperBadgeServer(TestCase):
             data = response.data.decode()
         except AttributeError:
             data = response.data
-        self.assertIn('OK', data)
+        self.assertIn('SUCCESS', data)
         self.assertEqual(response.content_type, 'image/svg+xml')
         self.assertEqual(response.status_code, 200)
 

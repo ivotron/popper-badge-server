@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 
 BADGE_NAMES = {
-    'OK': 'Popper-OK-green',
+    'SUCCESS': 'Popper-SUCCESS-green',
     'GOLD': 'Popper-GOLD-yellow',
     'FAIL': 'Popper-FAIL-red'
 }
