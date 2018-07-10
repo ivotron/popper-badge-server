@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os
+import time
 
 from flask import Flask, jsonify, request, render_template, make_response
 from tinydb import TinyDB, Query
@@ -80,7 +80,9 @@ def list_records(org, repo):
         key=lambda x: x['timestamp']
     )
     for record in records:
-        del record['timestamp']
+        record['timestamp'] = time.strftime(
+            '%Y-%m-%d %H:%M:%S', time.localtime(int(record['timestamp']))
+        )
         del record['name']
 
     return jsonify(records)

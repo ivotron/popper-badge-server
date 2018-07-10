@@ -1,4 +1,5 @@
 import os
+import time
 
 from app import app
 from unittest import TestCase
@@ -45,14 +46,14 @@ class TestPopperBadgeServer(TestCase):
     def test_post_correct_data(self):
         response = self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
-            'status': 'OK',
+            'status': 'SUCCESS',
             'timestamp': '1530440638'
         })
         self.assertEqual(response.status_code, 201)
 
     def test_post_incorrect_data(self):
         response = self.app.post('/systemslab/popper', data={
-            'status': 'OK',
+            'status': 'SUCCESS',
             'timestamp': '1530440638'
         })
         self.assertEqual(response.status_code, 400)
@@ -65,7 +66,7 @@ class TestPopperBadgeServer(TestCase):
 
         response = self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
-            'status': 'OK',
+            'status': 'SUCCESS',
         })
         self.assertEqual(response.status_code, 400)
 
@@ -149,7 +150,7 @@ class TestPopperBadgeServer(TestCase):
         org:repo from the list endpoint."""
         self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
-            'status': 'OK',
+            'status': 'SUCCESS',
             'timestamp': '1530440638'
         })
         response = self.app.get('/systemslab/popper/list')
@@ -157,5 +158,8 @@ class TestPopperBadgeServer(TestCase):
         self.assertEqual(
             response.json,
             [{'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
-              'status': 'OK'}]
+              'status': 'SUCCESS',
+              'timestamp': time.strftime(
+                  '%Y-%m-%d %H:%M:%S', time.localtime(1530440638)
+              )}]
         )
