@@ -9,9 +9,9 @@ app = Flask(__name__)
 
 
 BADGE_NAMES = {
-    'SUCCESS': 'Popper-SUCCESS-green',
-    'GOLD': 'Popper-GOLD-yellow',
-    'FAIL': 'Popper-FAIL-red'
+    'SUCCESS': 'popper-SUCCESS-green',
+    'GOLD': 'popper-GOLD-yellow',
+    'FAIL': 'popper-FAIL-red'
 }
 
 
@@ -34,10 +34,10 @@ def index(org, repo):
         if len(records) > 0:
             status = records[-1]['status']
             svg = render_template(
-                BADGE_NAMES.get(status, 'Popper-undefined-lightgrey') + '.svg'
+                BADGE_NAMES.get(status, 'popper-undefined-lightgrey') + '.svg'
             )
         else:
-            svg = render_template('Popper-undefined-lightgrey.svg')
+            svg = render_template('popper-undefined-lightgrey.svg')
         response = make_response(svg)
         response.content_type = 'image/svg+xml'
         return response
