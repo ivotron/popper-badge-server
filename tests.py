@@ -47,7 +47,8 @@ class TestPopperBadgeServer(TestCase):
         response = self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
             'status': 'SUCCESS',
-            'timestamp': '1530440638'
+            'timestamp': '1530440638',
+            'branch': 'master'
         })
         self.assertEqual(response.status_code, 201)
 
@@ -60,13 +61,15 @@ class TestPopperBadgeServer(TestCase):
 
         response = self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
-            'timestamp': '1530440638'
+            'timestamp': '1530440638',
+            'branch': 'master'
         })
         self.assertEqual(response.status_code, 400)
 
         response = self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
             'status': 'SUCCESS',
+            'branch': 'master'
         })
         self.assertEqual(response.status_code, 400)
 
@@ -76,7 +79,8 @@ class TestPopperBadgeServer(TestCase):
         self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
             'status': 'SUCCESS',
-            'timestamp': '1530440638'
+            'timestamp': '1530440638',
+            'branch': 'master'
         })
         response = self.app.get('/systemslab/popper')
         try:
@@ -93,7 +97,8 @@ class TestPopperBadgeServer(TestCase):
         self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
             'status': 'GOLD',
-            'timestamp': '1530440638'
+            'timestamp': '1530440638',
+            'branch': 'master'
         })
         response = self.app.get('/systemslab/popper')
         try:
@@ -110,7 +115,8 @@ class TestPopperBadgeServer(TestCase):
         self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
             'status': 'FAIL',
-            'timestamp': '1530440638'
+            'timestamp': '1530440638',
+            'branch': 'master'
         })
         response = self.app.get('/systemslab/popper')
         try:
@@ -127,7 +133,8 @@ class TestPopperBadgeServer(TestCase):
         self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
             'status': 'blahblah',
-            'timestamp': '1530440638'
+            'timestamp': '1530440638',
+            'branch': 'master'
         })
         response = self.app.get('/systemslab/popper')
         try:
@@ -151,7 +158,8 @@ class TestPopperBadgeServer(TestCase):
         self.app.post('/systemslab/popper', data={
             'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
             'status': 'SUCCESS',
-            'timestamp': '1530440638'
+            'timestamp': '1530440638',
+            'branch': 'master'
         })
         response = self.app.get('/systemslab/popper/list')
         self.assertEqual(response.status_code, 200)
@@ -163,3 +171,22 @@ class TestPopperBadgeServer(TestCase):
                   '%Y-%m-%d %H:%M:%S', time.localtime(1530440638)
               )}]
         )
+
+    def test_non_master_branch(self):
+        """When the code is run from a non-master branch, the server does
+        not store the data.
+        """
+        response = self.app.post('/systemslab/popper', data={
+            'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
+            'status': 'SUCCESS',
+            'timestamp': '1530440638',
+            'branch': 'test'
+        })
+        self.assertEqual(response.status_code, 200)
+        response = self.app.get('/systemslab/popper')
+        try:
+            data = response.data.decode()
+        except AttributeError:
+            data = response.data
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('undefined', data)
