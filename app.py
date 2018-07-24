@@ -47,22 +47,29 @@ def index(org, repo):
         commit_id = request.form.get('commit_id', None)
         timestamp = request.form.get('timestamp', None)
         status = request.form.get('status', None)
+        branch = request.form.get('branch', None)
 
-        if not commit_id or not timestamp or not status:
+        if not commit_id or not timestamp or not status or not branch:
             return jsonify({
-                'message': "Please provide commit id, timestamp and status."
+                'message': "Please provide commit id,"
+                " timestamp, branch and status."
             }), 400
         else:
-            db = TinyDB(app.config.get('DB_NAME', 'db.json'))
-            db.insert({
-                'name': '{}/{}'.format(org, repo),
-                'commit_id': commit_id,
-                'timestamp': timestamp,
-                'status': status
-            })
-            return jsonify({
-                'message': "Record successfully created."
-            }), 201
+            if branch == 'master':
+                db = TinyDB(app.config.get('DB_NAME', 'db.json'))
+                db.insert({
+                    'name': '{}/{}'.format(org, repo),
+                    'commit_id': commit_id,
+                    'timestamp': timestamp,
+                    'status': status
+                })
+                return jsonify({
+                    'message': "Record successfully created."
+                }), 201
+            else:
+                return jsonify({
+                    'message': "Record received but not saved."
+                }), 200
 
 
 @app.route('/<org>/<repo>/list', methods=['GET'])
