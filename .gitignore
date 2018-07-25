@@ -11,5 +11,6 @@ htmlcov/
 
 # Popper specific
 .cache
+popper/
 popper_logs
 popper_status
