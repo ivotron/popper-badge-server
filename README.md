@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/popperized/popper-badge-server.svg?branch=master)](https://travis-ci.org/popperized/popper-badge-server)
+[![Popper Status](http://badges.falsifiable.us/popperized/popper-badge-server)](http://popper.rtfd.io/en/latest/sections/badge_server.html)
+
+
 # Popper Badge Server
 
 This is a RESTful API server built with Flask used for serving badges,
@@ -18,8 +22,16 @@ sorted by timestamp. Provides the `commit_id` and the `status`.
 
 ### For development:
 
-1. Clone the repository with `git clone
-https://github.com/popperized/popper-badge-server.git`.
-2. Create and activate a virtual environment (recommended, but not necessary).
+1. Create and activate a virtual environment (recommended, but not necessary)
+```bash
+virtualenv popper-badge-server --python=python3
+cd popper-badge-server
+source bin/activate
+```
+2. Clone the repository
+```bash
+git clone https://github.com/popperized/popper-badge-server.git src
+cd src
+```
 3. Run `pip install -r requirements.txt` to install all the dependencies.
-4. Run `python main.py` to run the development server.
+4. Run `python app.py` to run the development server.
