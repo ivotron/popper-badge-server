@@ -3,6 +3,7 @@ import time
 
 from flask import Flask, jsonify, request, render_template, make_response
 from tinydb import TinyDB, Query
+from wsgiref.handlers import format_date_time
 
 
 app = Flask(__name__)
@@ -33,13 +34,19 @@ def index(org, repo):
         )
         if len(records) > 0:
             status = records[-1]['status']
+            timestamp = time.gmtime(int(records[-1]['timestamp']))
             svg = render_template(
                 BADGE_NAMES.get(status, 'popper-undefined-lightgrey') + '.svg'
             )
         else:
             svg = render_template('popper-undefined-lightgrey.svg')
+            timestamp = time.gmtime(0)
         response = make_response(svg)
         response.content_type = 'image/svg+xml'
+        response.headers['Cache-Control'] = 'no-cache'
+        response.headers['Last-Modified'] = format_date_time(
+            time.mktime(timestamp)
+        )
         return response
 
     elif request.method == 'POST':
