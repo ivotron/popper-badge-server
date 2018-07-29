@@ -190,3 +190,11 @@ class TestPopperBadgeServer(TestCase):
             data = response.data
         self.assertEqual(response.status_code, 200)
         self.assertIn('undefined', data)
+
+    def test_headers(self):
+        """Test the response headers returned from a GET request.
+        """
+        response = self.app.get('/systemslab/popper')
+        self.assertTrue('Cache-Control' in response.headers)
+        self.assertEqual(response.headers['Cache-Control'], 'no-cache')
+        self.assertTrue('Last-Modified' in response.headers)
