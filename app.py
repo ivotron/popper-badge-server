@@ -32,6 +32,7 @@ def index(org, repo):
             db.search(Record.name == '{}/{}'.format(org, repo)),
             key=lambda x: x['timestamp']
         )
+
         if len(records) > 0:
             status = records[-1]['status']
             timestamp = time.gmtime(int(records[-1]['timestamp']))
@@ -39,8 +40,10 @@ def index(org, repo):
                 BADGE_NAMES.get(status, 'popper-undefined-lightgrey') + '.svg'
             )
         else:
+
             svg = render_template('popper-undefined-lightgrey.svg')
             timestamp = time.gmtime(0)
+
         response = make_response(svg)
         response.content_type = 'image/svg+xml'
         response.headers['Cache-Control'] = 'no-cache'
@@ -57,23 +60,48 @@ def index(org, repo):
         branch = request.form.get('branch', None)
 
         if not commit_id or not timestamp or not status or not branch:
+
             return jsonify({
                 'message': "Please provide commit id,"
                 " timestamp, branch and status."
             }), 400
+
         else:
+
+            db = TinyDB(app.config.get('DB_NAME', 'db.json'))
+
             if branch == 'master':
-                db = TinyDB(app.config.get('DB_NAME', 'db.json'))
-                db.insert({
-                    'name': '{}/{}'.format(org, repo),
-                    'commit_id': commit_id,
-                    'timestamp': timestamp,
-                    'status': status
-                })
+
+                # Check if the commit id already exists, update if present
+                Record = Query()
+                records = db.search(Record.name == '{}/{}'.format(org, repo))
+                record_exists = False
+                for record in records:
+                    if record['commit_id'] == commit_id:
+                        record_exists = True
+                        record['status'] = status
+                        record['timestamp'] = timestamp
+                        db.update(
+                            record, (Record.name == '{}/{}'.format(org, repo))
+                            & (Record.commit_id == commit_id)
+                        )
+                        break
+
+                # If record doesn't exist with same commit id, create a new one
+                if not record_exists:
+                    db.insert({
+                        'name': '{}/{}'.format(org, repo),
+                        'commit_id': commit_id,
+                        'timestamp': timestamp,
+                        'status': status
+                    })
+
                 return jsonify({
                     'message': "Record successfully created."
                 }), 201
+
             else:
+
                 return jsonify({
                     'message': "Record received but not saved."
                 }), 200
