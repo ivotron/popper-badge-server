@@ -198,3 +198,39 @@ class TestPopperBadgeServer(TestCase):
         self.assertTrue('Cache-Control' in response.headers)
         self.assertEqual(response.headers['Cache-Control'], 'no-cache')
         self.assertTrue('Last-Modified' in response.headers)
+
+    def test_records_with_same_commit_id(self):
+        """Test the situation when two records with same commit id is created.
+        The one submitted later should be returned with the GET request and
+        also a new record shouldn't be created.
+        """
+        response = self.app.post('/systemslab/popper', data={
+            'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
+            'status': 'SUCCESS',
+            'timestamp': '1530440638',
+            'branch': 'master'
+        })
+        self.assertEqual(response.status_code, 201)
+        response = self.app.get('/systemslab/popper')
+        try:
+            data = response.data.decode()
+        except AttributeError:
+            data = response.data
+        self.assertIn('SUCCESS', data)
+
+        response = self.app.post('/systemslab/popper', data={
+            'commit_id': '8d90af11efd1d8ff164775b9406928b22d688d79',
+            'status': 'FAIL',
+            'timestamp': '1530440679',
+            'branch': 'master'
+        })
+        self.assertEqual(response.status_code, 201)
+        response = self.app.get('/systemslab/popper')
+        try:
+            data = response.data.decode()
+        except AttributeError:
+            data = response.data
+        self.assertIn('FAIL', data)
+
+        response = self.app.get('/systemslab/popper/list')
+        self.assertEqual(len(response.json), 1)
